@@ -408,6 +408,36 @@ function Atmosphere({ page }) {
   );
 }
 
+const SITE_URL = 'https://rguard-site-kp3a.vercel.app';
+const SITE_NAME = 'RGUARD — Красная Гвардия';
+const DEFAULT_DESC = 'Вирусные видеоролики, продюсирование и контент-стратегии для компаний реального сектора и B2B.';
+
+function PageSEO({ title, description, path = '', image, type = 'website' }) {
+  const fullTitle = title ? `${title} — RGUARD` : SITE_NAME;
+  const desc = description || DEFAULT_DESC;
+  const url = `${SITE_URL}${path}`;
+  const img = image || `${SITE_URL}/og-default.jpg`;
+
+  return (
+    <Helmet>
+      <title>{fullTitle}</title>
+      <meta name="description" content={desc} />
+      <link rel="canonical" href={url} />
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={desc} />
+      <meta property="og:url" content={url} />
+      <meta property="og:type" content={type} />
+      <meta property="og:image" content={img} />
+      <meta property="og:site_name" content={SITE_NAME} />
+      <meta property="og:locale" content="ru_RU" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={desc} />
+      <meta name="twitter:image" content={img} />
+    </Helmet>
+  );
+}
+
 function PhotoGallery({ count = 6 }) {
   const [current, setCurrent] = React.useState(0);
   const prev = () => setCurrent((i) => (i - 1 + count) % count);
@@ -597,6 +627,11 @@ export default function RGuardPrototype() {
 
   const renderHome = () => (
     <section className="relative overflow-hidden" style={{ background: '#0a0a14' }}>
+      <PageSEO
+        title="Вирусные ролики для промышленности и реального сектора"
+        description="RGUARD — креативное агентство. Создаём вирусные видеоролики, корпоративные фильмы и контент-системы для B2B и industrial-компаний."
+        path="/"
+      />
       {/* Cyberpunk grid lines */}
       <div className="pointer-events-none fixed inset-0 z-0" style={{
         backgroundImage: 'linear-gradient(rgba(239,68,68,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(239,68,68,0.04) 1px, transparent 1px)',
@@ -901,6 +936,11 @@ export default function RGuardPrototype() {
 
     return (
       <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
+        <PageSEO
+          title="Вирусные видеоролики для промышленности и B2B"
+          description="Создаём вирусный контент для industrial-аудитории: производства, стройки, добыча, вахта. Ролики, которые пересылают в Telegram и обсуждают внутри индустрии."
+          path="/viral"
+        />
         <div className="max-w-6xl">
           <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Флагманское направление RGUARD</div>
           <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Вирусные<br />видеоролики</h1>
@@ -1002,6 +1042,11 @@ export default function RGuardPrototype() {
 
     return (
       <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
+        <PageSEO
+          title="Продюсирование и SMM для бизнеса"
+          description="Системный SMM и видеопродюсирование для B2B-компаний. Контент-стратегия, съёмка, публикации и аналитика под ключ — от 8 роликов в месяц."
+          path="/production"
+        />
         <div className="max-w-6xl">
           <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Продюсирование и СММ</div>
           <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Контент-система<br />для бизнеса</h1>
@@ -1076,6 +1121,11 @@ export default function RGuardPrototype() {
 
   const renderCasesPage = () => (
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
+      <PageSEO
+        title="Кейсы — вирусный контент для реального бизнеса"
+        description="Реальные результаты: 40+ млн просмотров для Петроинжиниринг, корпоративные фильмы, SMM для B2B. Смотрите проекты RGUARD по отраслям."
+        path="/cases"
+      />
       <div className="relative overflow-hidden rounded-[42px] border border-red-950/40 bg-gradient-to-br from-red-950/30 via-black to-black p-10 md:p-16 mb-24">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,rgba(239,68,68,0.35),transparent_45%)]" />
         <div className="relative z-10 max-w-5xl">
@@ -1138,6 +1188,12 @@ export default function RGuardPrototype() {
 
     return (
       <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
+        <PageSEO
+          title={`Кейс: ${currentCase.title}`}
+          description={currentCase.shortText}
+          path={`/cases/${currentCase.id}`}
+          type="article"
+        />
         <button onClick={() => goToPage('cases')} className="mb-10 font-mono-terminal text-zinc-500 hover:text-red-400 transition-all text-xs uppercase tracking-[3px] cursor-pointer">
           ← Назад к кейсам
         </button>
@@ -1232,6 +1288,7 @@ export default function RGuardPrototype() {
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
       <div className="max-w-5xl mb-20">
         <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Контакты</div>
+        <PageSEO title="Контакты" description="Свяжитесь с RGUARD — Красной Гвардией. Телефон, Telegram, адрес офиса в Уфе. Обсудим вирусный контент и продвижение для вашего бизнеса." path="/contacts" />
         <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Свяжитесь с Красной Гвардией</h1>
         <p className="text-zinc-300 text-xl leading-relaxed">Если у вас задача по вирусному контенту, продюсированию, HR-маркетингу или медийности бренда — свяжитесь с нами напрямую.</p>
       </div>
@@ -1306,6 +1363,7 @@ export default function RGuardPrototype() {
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
       <div className="max-w-6xl mb-20">
         <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Креатив / Написание сценариев</div>
+        <PageSEO title="Написание сценариев для вирусных роликов" description="Разрабатываем вирусные сценарии для видеороликов: захват внимания, удержание, драматургия и призыв к действию. Раскадровка в комплекте." path="/scripts" />
         <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Сценарии, которые хочется досматривать и пересылать</h1>
         <p className="text-zinc-300 text-xl leading-relaxed max-w-4xl">Мы создаем сценарии не ради красивого текста. Наша задача — удержать внимание зрителя, вызвать эмоцию и помочь ролику распространиться.</p>
       </div>
@@ -1395,6 +1453,7 @@ export default function RGuardPrototype() {
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
       <div className="max-w-6xl mb-20">
         <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Организация мероприятий</div>
+        <PageSEO title="Организация мероприятий в Уфе" description="Организуем корпоративы, городские праздники, фестивали и бренд-активации. От идеи до финала под ключ — с видеосъёмкой и контентом." path="/events" />
         <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Организуем события, которые запоминаются и становятся контентом</h1>
         <p className="text-zinc-300 text-xl leading-relaxed max-w-5xl">От камерных частных праздников до масштабных городских мероприятий на тысячи гостей. Берем на себя организацию под ключ или подключаемся как отдельная команда.</p>
       </div>
@@ -1530,6 +1589,7 @@ export default function RGuardPrototype() {
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
       <div className="max-w-6xl mb-20">
         <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Креатив / Концепции рекламных кампаний</div>
+        <PageSEO title="Концепции рекламных кампаний" description="Разрабатываем рекламные концепции, которые распространяются сами: HR-кампании, запуски продуктов, вирусные спецпроекты и PR-инфоповоды." path="/concepts" />
         <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Концепции рекламных кампаний, о которых говорят бесплатно</h1>
         <p className="text-zinc-300 text-xl leading-relaxed max-w-5xl">Мы создаем рекламные идеи, задача которых не просто привлечь внимание, а проникнуть в обсуждения, социальные сети и повседневные разговоры.</p>
       </div>
@@ -1630,6 +1690,7 @@ export default function RGuardPrototype() {
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
       <div className="max-w-6xl mb-20">
         <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Создание видео / Корпоративные фильмы</div>
+        <PageSEO title="Корпоративные фильмы для B2B и промышленности" description="Снимаем корпоративные фильмы с юмором и динамикой: HR-фильмы, техника безопасности, бренд-фильмы и обучающий контент для реального сектора." path="/corporate" />
         <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Корпоративные фильмы, которые не скучно смотреть</h1>
         <p className="text-zinc-300 text-xl leading-relaxed max-w-5xl">Большинство корпоративных фильмов выглядят одинаково: медленный монтаж, шаблонный дикторский текст и ощущение обязательного просмотра. Мы делаем иначе.</p>
       </div>
@@ -1727,6 +1788,7 @@ export default function RGuardPrototype() {
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
       <div className="max-w-6xl mb-20">
         <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Создание видео / ИИ контент</div>
+        <PageSEO title="ИИ-контент и AI-видео для бизнеса" description="Создаём ИИ-ролики с сильной идеей: AI-рекламные видео, гибридный продакшн, визуализация концепций. Сначала идея — потом генерация." path="/ai-content" />
         <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">ИИ-контент, в котором есть идея, а не просто генерация</h1>
         <p className="text-zinc-300 text-xl leading-relaxed max-w-5xl">С развитием искусственного интеллекта изменился баланс сил. Раньше дорого стоила реализация: камеры, свет, площадка, съемочная группа. Сегодня реализация стала доступнее. На первый план вышла идея.</p>
       </div>
@@ -1841,6 +1903,7 @@ export default function RGuardPrototype() {
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
       <div className="max-w-5xl mb-16">
         <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Блогеры и лица проекта</div>
+        <PageSEO title="Блогеры и лица проекта RGUARD" description="Команда блогеров RGUARD: Дамир Ильгамович, Дима Хрисанов, Надир, Роберт, Раис и другие. Вирусный industrial-контент через реальных людей." path="/bloggers" />
         <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Люди, которые делают контент RGUARD живым</h1>
         <p className="text-zinc-300 text-xl leading-relaxed">Каждый блогер — отдельный тип подачи, аудитории и взаимодействия с industrial-средой.</p>
       </div>
@@ -1887,6 +1950,11 @@ export default function RGuardPrototype() {
 
     return (
       <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
+        <PageSEO
+          title={`${blogger.name} — блогер RGUARD`}
+          description={blogger.desc}
+          path={`/bloggers/${blogger.id}`}
+        />
         <button onClick={() => goToPage('bloggers')} className="mb-10 font-mono-terminal text-zinc-500 hover:text-red-400 transition-all text-xs uppercase tracking-[3px] cursor-pointer">
           ← Все блогеры
         </button>
@@ -1991,10 +2059,7 @@ export default function RGuardPrototype() {
 
   const renderArticlesPage = () => (
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
-      <Helmet>
-        <title>Статьи о вирусном контенте и industrial-маркетинге — RGUARD</title>
-        <meta name="description" content="Экспертные статьи о вирусном контенте, B2B-маркетинге и продвижении в реальном секторе." />
-      </Helmet>
+      <PageSEO title="Статьи о вирусном контенте и industrial-маркетинге" description="Экспертные статьи о вирусном контенте, B2B-маркетинге и продвижении в реальном секторе." path="/articles" />
 
       <div className="max-w-5xl mb-16">
         <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] uppercase mb-4">// ARTICLES</div>
@@ -2070,18 +2135,18 @@ export default function RGuardPrototype() {
       </div>
     );
 
-    const seoTitle = currentPost.seo?.metaTitle || currentPost.title + ' — RGUARD';
+    const seoTitle = currentPost.seo?.metaTitle || currentPost.title;
     const seoDesc = currentPost.seo?.metaDescription || currentPost.excerpt || '';
 
     return (
       <section className="px-4 sm:px-6 py-20 max-w-4xl mx-auto">
-        <Helmet>
-          <title>{seoTitle}</title>
-          <meta name="description" content={seoDesc} />
-          {currentPost.seo?.ogImage?.asset?.url && <meta property="og:image" content={currentPost.seo.ogImage.asset.url} />}
-          <meta property="og:title" content={seoTitle} />
-          <meta property="og:description" content={seoDesc} />
-        </Helmet>
+        <PageSEO
+          title={seoTitle}
+          description={seoDesc}
+          path={`/articles/${currentPost.slug}`}
+          image={currentPost.seo?.ogImage?.asset?.url || currentPost.coverImage}
+          type="article"
+        />
 
         <button onClick={() => goToPage('articles')} className="mb-10 font-mono-terminal text-zinc-500 hover:text-red-400 transition-all text-xs uppercase tracking-[3px] cursor-pointer">
           ← Все статьи
@@ -2149,10 +2214,7 @@ export default function RGuardPrototype() {
 
   const renderIndustriesPage = () => (
     <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
-      <Helmet>
-        <title>Отраслевые решения для вашего бизнеса — RGUARD</title>
-        <meta name="description" content="Готовые контент-решения для добычи, строительства, производства, нефтегаза, агросектора и недвижимости." />
-      </Helmet>
+      <PageSEO title="Отраслевые контент-решения для вашего бизнеса" description="Готовые решения для добычи, строительства, производства, нефтегаза, агросектора и недвижимости. Контент под специфику вашей отрасли." path="/industries" />
 
       <div className="max-w-5xl mb-16">
         <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] uppercase mb-4">// INDUSTRIES</div>
@@ -2195,17 +2257,17 @@ export default function RGuardPrototype() {
       </div>
     );
 
-    const seoTitle = currentIndustry.seo?.metaTitle || `${currentIndustry.title} — контент-решения RGUARD`;
+    const seoTitle = currentIndustry.seo?.metaTitle || `Контент для ${currentIndustry.title.toLowerCase()}`;
     const seoDesc = currentIndustry.seo?.metaDescription || currentIndustry.shortDesc || '';
 
     return (
       <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
-        <Helmet>
-          <title>{seoTitle}</title>
-          <meta name="description" content={seoDesc} />
-          <meta property="og:title" content={seoTitle} />
-          <meta property="og:description" content={seoDesc} />
-        </Helmet>
+        <PageSEO
+          title={seoTitle}
+          description={seoDesc}
+          path={`/industries/${currentIndustry.slug}`}
+          image={currentIndustry.coverImage}
+        />
 
         <button onClick={() => goToPage('industries')} className="mb-10 font-mono-terminal text-zinc-500 hover:text-red-400 transition-all text-xs uppercase tracking-[3px] cursor-pointer">
           ← Все отрасли
