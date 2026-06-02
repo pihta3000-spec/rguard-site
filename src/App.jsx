@@ -1310,11 +1310,8 @@ export default function RGuardPrototype() {
             </div>
           </div>
 
-          <div className="aspect-[4/5] rounded-[36px] border border-red-950/40 bg-zinc-950 flex items-center justify-center text-center p-8">
-            <div>
-              <div className="text-red-500 uppercase tracking-[4px] text-xs mb-4">Photo Placeholder</div>
-              <div className="text-2xl font-extrabold">Усманов Радим</div>
-            </div>
+          <div className="aspect-[4/5] rounded-[36px] border border-red-950/40 overflow-hidden">
+            <img src="/radim.jpg" alt="Усманов Радим" className="w-full h-full object-cover object-top" />
           </div>
         </div>
       </div>
