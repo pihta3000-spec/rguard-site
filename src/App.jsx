@@ -453,7 +453,26 @@ function PhotoGallery({ count = 6 }) {
 }
 
 export default function RGuardPrototype() {
-  const [page, setPage] = React.useState('home');
+  // URL ↔ page mapping
+  const pageToPath = (id) => {
+    if (id === 'home') return '/';
+    if (id.startsWith('article-')) return `/articles/${id.replace('article-', '')}`;
+    if (id.startsWith('industry-')) return `/industries/${id.replace('industry-', '')}`;
+    if (id.startsWith('blogger-')) return `/bloggers/${id.replace('blogger-', '')}`;
+    if (id === 'case-petro') return '/cases/petro-engineering';
+    return `/${id}`;
+  };
+
+  const pathToPage = (path) => {
+    if (path === '/' || path === '') return 'home';
+    if (path.startsWith('/articles/')) return `article-${path.replace('/articles/', '')}`;
+    if (path.startsWith('/industries/')) return `industry-${path.replace('/industries/', '')}`;
+    if (path.startsWith('/bloggers/')) return `blogger-${path.replace('/bloggers/', '')}`;
+    if (path === '/cases/petro-engineering') return 'case-petro';
+    return path.replace('/', '');
+  };
+
+  const [page, setPage] = React.useState(() => pathToPage(window.location.pathname));
   const [menu, setMenu] = React.useState(false);
   const [caseFilter, setCaseFilter] = React.useState('all');
 
@@ -561,11 +580,19 @@ export default function RGuardPrototype() {
     { id: 'contacts', label: 'Контакты' },
   ];
 
+  // Синхронизация с историей браузера
+  React.useEffect(() => {
+    const onPop = () => setPage(pathToPage(window.location.pathname));
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
   const goToPage = (id) => {
     if (!id) return;
     setPage(id);
     setMenu(false);
     window.scrollTo(0, 0);
+    window.history.pushState({}, '', pageToPath(id));
   };
 
   const renderHome = () => (
