@@ -1,5 +1,8 @@
 import React from 'react';
+import { HelmetProvider, Helmet } from 'react-helmet-async';
+import { PortableText } from '@portabletext/react';
 import logoSvg from './logow.svg';
+import { getPosts, getPost, getIndustries, getIndustry } from './sanity.js';
 import artSign from './arts/sign.svg';
 import artFavicon from './arts/favicon.svg';
 import artAstro from './arts/astro.svg';
@@ -454,6 +457,98 @@ export default function RGuardPrototype() {
   const [menu, setMenu] = React.useState(false);
   const [caseFilter, setCaseFilter] = React.useState('all');
 
+  // Данные из Sanity
+  const [posts, setPosts] = React.useState([]);
+  const [currentPost, setCurrentPost] = React.useState(null);
+  const [postFilter, setPostFilter] = React.useState('all');
+  const [industries, setIndustries] = React.useState([]);
+  const [currentIndustry, setCurrentIndustry] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+  // Загрузка данных при переходе на страницы
+  React.useEffect(() => {
+    if (page === 'articles') {
+      setLoading(true);
+      getPosts(postFilter === 'all' ? null : postFilter)
+        .then(data => { setPosts(data || []); setLoading(false); })
+        .catch(err => { console.error('Posts fetch error:', err); setLoading(false); });
+    }
+    if (page === 'industries') {
+      setLoading(true);
+      getIndustries()
+        .then(data => { setIndustries(data || []); setLoading(false); })
+        .catch(err => { console.error('Industries fetch error:', err); setLoading(false); });
+    }
+  }, [page, postFilter]);
+
+  React.useEffect(() => {
+    if (page.startsWith('article-')) {
+      const slug = page.replace('article-', '');
+      setLoading(true);
+      getPost(slug)
+        .then(data => { setCurrentPost(data); setLoading(false); })
+        .catch(err => { console.error('Post fetch error:', err); setLoading(false); });
+    }
+    if (page.startsWith('industry-')) {
+      const slug = page.replace('industry-', '');
+      setLoading(true);
+      getIndustry(slug)
+        .then(data => { setCurrentIndustry(data); setLoading(false); })
+        .catch(err => { console.error('Industry fetch error:', err); setLoading(false); });
+    }
+  }, [page]);
+
+  const POST_CATEGORIES = [
+    { id: 'all', label: 'Все статьи' },
+    { id: 'viral', label: 'Вирусный контент' },
+    { id: 'cases', label: 'Кейсы' },
+    { id: 'tools', label: 'Инструменты' },
+    { id: 'trends', label: 'Тренды' },
+  ];
+
+  const formatDate = (iso) => iso ? new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+
+  const portableTextComponents = {
+    block: {
+      h2: ({ children }) => <h2 className="glitch-hero text-3xl font-black mt-12 mb-6">{children}</h2>,
+      h3: ({ children }) => <h3 className="text-2xl font-bold mt-8 mb-4 text-white">{children}</h3>,
+      h4: ({ children }) => <h4 className="text-xl font-bold mt-6 mb-3 text-zinc-200">{children}</h4>,
+      normal: ({ children }) => <p className="text-zinc-300 text-lg leading-relaxed mb-6">{children}</p>,
+      blockquote: ({ children }) => (
+        <blockquote className="my-8 pl-6 py-4" style={{ borderLeft: '3px solid rgba(239,68,68,0.6)', background: 'rgba(239,68,68,0.04)' }}>
+          <p className="text-zinc-200 text-lg italic leading-relaxed">{children}</p>
+        </blockquote>
+      ),
+    },
+    marks: {
+      strong: ({ children }) => <strong className="text-white font-bold">{children}</strong>,
+      em: ({ children }) => <em className="text-zinc-200 italic">{children}</em>,
+      link: ({ value, children }) => (
+        <a href={value?.href} target={value?.blank ? '_blank' : undefined} rel="noreferrer"
+          className="text-red-400 hover:text-red-300 underline underline-offset-4 transition-colors">
+          {children}
+        </a>
+      ),
+    },
+    types: {
+      image: ({ value }) => value?.asset?.url ? (
+        <figure className="my-10">
+          <img src={value.asset.url} alt={value.caption || ''} className="w-full rounded-sm" />
+          {value.caption && <figcaption className="font-mono-terminal text-zinc-500 text-xs mt-3 text-center tracking-[2px]">{value.caption}</figcaption>}
+        </figure>
+      ) : null,
+      videoEmbed: ({ value }) => value?.url ? (
+        <div className="my-10">
+          <a href={value.url} target="_blank" rel="noreferrer"
+            className="flex items-center gap-4 p-6 cyber-card">
+            <div className="font-mono-terminal text-red-500 text-xs tracking-[3px]">[ VIDEO ]</div>
+            <div className="text-zinc-300 text-sm">{value.caption || value.url}</div>
+          </a>
+        </div>
+      ) : null,
+    },
+  };
+
   const nav = [
     { id: 'home', label: 'Главная' },
     { id: 'cases', label: 'Кейсы' },
@@ -468,6 +563,8 @@ export default function RGuardPrototype() {
       { id: 'concepts', label: 'Концепции рекламных кампаний' },
     ] },
     { id: 'events', label: 'Организация мероприятий' },
+    { id: 'articles', label: 'Статьи' },
+    { id: 'industries', label: 'Отраслевые решения' },
     { id: 'contacts', label: 'Контакты' },
   ];
 
@@ -1868,6 +1965,284 @@ export default function RGuardPrototype() {
     );
   };
 
+  // ─────────────────────────────────────────────────────────
+  // СТАТЬИ
+  // ─────────────────────────────────────────────────────────
+
+  const renderArticlesPage = () => (
+    <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
+      <Helmet>
+        <title>Статьи о вирусном контенте и industrial-маркетинге — RGUARD</title>
+        <meta name="description" content="Экспертные статьи о вирусном контенте, B2B-маркетинге и продвижении в реальном секторе." />
+      </Helmet>
+
+      <div className="max-w-5xl mb-16">
+        <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] uppercase mb-4">// ARTICLES</div>
+        <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-6">Статьи</h1>
+        <p className="text-zinc-400 text-xl leading-relaxed">Экспертный контент о вирусном маркетинге, industrial-аудитории и реальных кейсах.</p>
+      </div>
+
+      {/* Фильтры */}
+      <div className="flex flex-wrap gap-3 mb-12">
+        {POST_CATEGORIES.map(cat => (
+          <button key={cat.id} onClick={() => setPostFilter(cat.id)}
+            className={`font-mono-terminal text-xs uppercase tracking-[2px] px-5 py-3 transition-all cursor-pointer ${postFilter === cat.id ? 'text-white' : 'text-zinc-500 hover:text-red-400'}`}
+            style={postFilter === cat.id
+              ? { border: '1px solid rgba(239,68,68,0.8)', background: 'rgba(239,68,68,0.12)' }
+              : { border: '1px solid rgba(239,68,68,0.2)', background: 'transparent' }}>
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="font-mono-terminal text-red-500 text-sm tracking-[3px] text-center py-20">// LOADING...</div>
+      ) : posts.length === 0 ? (
+        <div className="text-center py-24" style={{ border: '1px solid rgba(239,68,68,0.15)', background: 'rgba(10,10,20,0.8)' }}>
+          <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] mb-4">// EMPTY</div>
+          <div className="text-2xl font-black mb-4">Статьи появятся здесь</div>
+          <p className="text-zinc-500">Добавьте первую статью через Sanity Studio</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts.map(post => (
+            <button key={post._id} onClick={() => goToPage(`article-${post.slug}`)}
+              className="cyber-card overflow-hidden text-left">
+              {post.coverImage ? (
+                <img src={post.coverImage} alt={post.title} className="w-full aspect-video object-cover" />
+              ) : (
+                <div className="w-full aspect-video flex items-center justify-center"
+                  style={{ background: 'rgba(239,68,68,0.05)', borderBottom: '1px solid rgba(239,68,68,0.12)' }}>
+                  <span className="font-mono-terminal text-red-500/30 text-xs tracking-[3px]">NO IMAGE</span>
+                </div>
+              )}
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="font-mono-terminal text-red-500 text-xs tracking-[2px] uppercase">
+                    {POST_CATEGORIES.find(c => c.id === post.category)?.label || post.category}
+                  </span>
+                  {post.publishedAt && (
+                    <span className="font-mono-terminal text-zinc-600 text-xs">{formatDate(post.publishedAt)}</span>
+                  )}
+                </div>
+                <h2 className="text-xl font-black mb-3 leading-tight">{post.title}</h2>
+                {post.excerpt && <p className="text-zinc-500 text-sm leading-relaxed mb-4 line-clamp-3">{post.excerpt}</p>}
+                <div className="font-mono-terminal text-xs text-red-500 tracking-[2px]">ЧИТАТЬ →</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+
+  const renderArticlePage = () => {
+    if (loading) return (
+      <div className="flex items-center justify-center h-96">
+        <div className="font-mono-terminal text-red-500 text-sm tracking-[3px]">// LOADING...</div>
+      </div>
+    );
+    if (!currentPost) return (
+      <div className="text-center py-32">
+        <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] mb-4">// 404</div>
+        <div className="text-2xl font-black mb-6">Статья не найдена</div>
+        <button onClick={() => goToPage('articles')} className="btn-secondary">← К статьям</button>
+      </div>
+    );
+
+    const seoTitle = currentPost.seo?.metaTitle || currentPost.title + ' — RGUARD';
+    const seoDesc = currentPost.seo?.metaDescription || currentPost.excerpt || '';
+
+    return (
+      <section className="px-4 sm:px-6 py-20 max-w-4xl mx-auto">
+        <Helmet>
+          <title>{seoTitle}</title>
+          <meta name="description" content={seoDesc} />
+          {currentPost.seo?.ogImage?.asset?.url && <meta property="og:image" content={currentPost.seo.ogImage.asset.url} />}
+          <meta property="og:title" content={seoTitle} />
+          <meta property="og:description" content={seoDesc} />
+        </Helmet>
+
+        <button onClick={() => goToPage('articles')} className="mb-10 font-mono-terminal text-zinc-500 hover:text-red-400 transition-all text-xs uppercase tracking-[3px] cursor-pointer">
+          ← Все статьи
+        </button>
+
+        {currentPost.coverImage && (
+          <img src={currentPost.coverImage} alt={currentPost.title}
+            className="w-full aspect-video object-cover mb-10" style={{ border: '1px solid rgba(239,68,68,0.15)' }} />
+        )}
+
+        <div className="flex items-center gap-4 mb-6">
+          <span className="font-mono-terminal text-red-500 text-xs tracking-[2px] uppercase">
+            {POST_CATEGORIES.find(c => c.id === currentPost.category)?.label || currentPost.category}
+          </span>
+          {currentPost.publishedAt && (
+            <span className="font-mono-terminal text-zinc-600 text-xs">{formatDate(currentPost.publishedAt)}</span>
+          )}
+        </div>
+
+        <h1 className="glitch-hero text-4xl md:text-6xl font-black leading-tight mb-8">{currentPost.title}</h1>
+
+        {currentPost.excerpt && (
+          <p className="text-zinc-300 text-xl leading-relaxed mb-12 pb-12" style={{ borderBottom: '1px solid rgba(239,68,68,0.15)' }}>
+            {currentPost.excerpt}
+          </p>
+        )}
+
+        <div className="prose-rguard">
+          {currentPost.body && <PortableText value={currentPost.body} components={portableTextComponents} />}
+        </div>
+
+        {currentPost.relatedPosts?.length > 0 && (
+          <div className="mt-20 pt-12" style={{ borderTop: '1px solid rgba(239,68,68,0.15)' }}>
+            <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] uppercase mb-8">// ПОХОЖИЕ СТАТЬИ</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {currentPost.relatedPosts.map(p => (
+                <button key={p._id} onClick={() => goToPage(`article-${p.slug}`)} className="cyber-card p-6 text-left">
+                  <div className="font-mono-terminal text-red-500 text-xs tracking-[2px] uppercase mb-3">
+                    {POST_CATEGORIES.find(c => c.id === p.category)?.label || p.category}
+                  </div>
+                  <div className="text-lg font-bold leading-tight mb-2">{p.title}</div>
+                  {p.excerpt && <p className="text-zinc-500 text-sm leading-relaxed line-clamp-2">{p.excerpt}</p>}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-20 p-10 md:p-14" style={{ border: '1px solid rgba(239,68,68,0.18)', background: 'rgba(10,10,20,0.85)' }}>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="text-4xl font-black leading-tight mb-6">Хотите такой же контент для вашего бизнеса?</div>
+              <p className="text-zinc-400 text-lg leading-relaxed">Разберём вашу нишу и предложим форматы, которые работают.</p>
+            </div>
+            <LeadForm button="Обсудить проект" textarea="Опишите вашу задачу" />
+          </div>
+        </div>
+      </section>
+    );
+  };
+
+  // ─────────────────────────────────────────────────────────
+  // ОТРАСЛЕВЫЕ РЕШЕНИЯ
+  // ─────────────────────────────────────────────────────────
+
+  const renderIndustriesPage = () => (
+    <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
+      <Helmet>
+        <title>Отраслевые решения для вашего бизнеса — RGUARD</title>
+        <meta name="description" content="Готовые контент-решения для добычи, строительства, производства, нефтегаза, агросектора и недвижимости." />
+      </Helmet>
+
+      <div className="max-w-5xl mb-16">
+        <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] uppercase mb-4">// INDUSTRIES</div>
+        <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-6">Отраслевые решения</h1>
+        <p className="text-zinc-400 text-xl leading-relaxed max-w-3xl">Готовые контент-стратегии под вашу отрасль. Выберите направление — покажем, что работает именно в вашей нише.</p>
+      </div>
+
+      {loading ? (
+        <div className="font-mono-terminal text-red-500 text-sm tracking-[3px] text-center py-20">// LOADING...</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {industries.map((industry, i) => (
+            <button key={industry._id} onClick={() => goToPage(`industry-${industry.slug}`)}
+              className="cyber-card p-8 text-left group">
+              <div className="flex items-center justify-between mb-6">
+                <div className="text-4xl">{industry.icon}</div>
+                <div className="font-mono-terminal text-red-500/30 text-xs">#{String(i+1).padStart(2,'0')}</div>
+              </div>
+              <h2 className="text-2xl font-black mb-4 leading-tight">{industry.title}</h2>
+              {industry.shortDesc && <p className="text-zinc-500 text-sm leading-relaxed mb-6">{industry.shortDesc}</p>}
+              <div className="font-mono-terminal text-xs text-red-500 tracking-[2px]">ПОДРОБНЕЕ →</div>
+            </button>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+
+  const renderIndustryPage = () => {
+    if (loading) return (
+      <div className="flex items-center justify-center h-96">
+        <div className="font-mono-terminal text-red-500 text-sm tracking-[3px]">// LOADING...</div>
+      </div>
+    );
+    if (!currentIndustry) return (
+      <div className="text-center py-32">
+        <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] mb-4">// 404</div>
+        <div className="text-2xl font-black mb-6">Отрасль не найдена</div>
+        <button onClick={() => goToPage('industries')} className="btn-secondary">← К отраслям</button>
+      </div>
+    );
+
+    const seoTitle = currentIndustry.seo?.metaTitle || `${currentIndustry.title} — контент-решения RGUARD`;
+    const seoDesc = currentIndustry.seo?.metaDescription || currentIndustry.shortDesc || '';
+
+    return (
+      <section className="px-4 sm:px-6 py-20 max-w-7xl mx-auto">
+        <Helmet>
+          <title>{seoTitle}</title>
+          <meta name="description" content={seoDesc} />
+          <meta property="og:title" content={seoTitle} />
+          <meta property="og:description" content={seoDesc} />
+        </Helmet>
+
+        <button onClick={() => goToPage('industries')} className="mb-10 font-mono-terminal text-zinc-500 hover:text-red-400 transition-all text-xs uppercase tracking-[3px] cursor-pointer">
+          ← Все отрасли
+        </button>
+
+        <div className="grid lg:grid-cols-2 gap-16 mb-20 items-start">
+          <div>
+            <div className="text-6xl mb-6">{currentIndustry.icon}</div>
+            <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] uppercase mb-4">// INDUSTRY</div>
+            <h1 className="glitch-hero text-5xl md:text-6xl font-black leading-none mb-6">{currentIndustry.title}</h1>
+            {currentIndustry.shortDesc && (
+              <p className="text-zinc-300 text-xl leading-relaxed mb-8">{currentIndustry.shortDesc}</p>
+            )}
+          </div>
+          {currentIndustry.coverImage && (
+            <img src={currentIndustry.coverImage} alt={currentIndustry.title}
+              className="w-full aspect-video object-cover" style={{ border: '1px solid rgba(239,68,68,0.15)' }} />
+          )}
+        </div>
+
+        {currentIndustry.body && currentIndustry.body.length > 0 && (
+          <div className="max-w-4xl mb-20">
+            <PortableText value={currentIndustry.body} components={portableTextComponents} />
+          </div>
+        )}
+
+        {currentIndustry.linkedServices?.length > 0 && (
+          <div className="mb-20">
+            <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] uppercase mb-8">// НАШИ РЕШЕНИЯ ДЛЯ ВАШЕЙ ОТРАСЛИ</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {currentIndustry.linkedServices.map((svc, i) => (
+                <button key={i} onClick={() => goToPage(svc.pageId)} className="cyber-card p-8 text-left">
+                  <div className="font-mono-terminal text-red-500 text-xs tracking-[3px] uppercase mb-4">SVC_{String(i+1).padStart(2,'0')}</div>
+                  <div className="text-xl font-black mb-3">{svc.title}</div>
+                  {svc.description && <p className="text-zinc-500 text-sm leading-relaxed mb-5">{svc.description}</p>}
+                  <div className="font-mono-terminal text-xs text-red-500 tracking-[2px]">УЗНАТЬ ПОДРОБНЕЕ →</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="p-10 md:p-14" style={{ border: '1px solid rgba(239,68,68,0.18)', background: 'rgba(10,10,20,0.85)' }}>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="text-4xl font-black leading-tight mb-6">
+                Нужен контент для {currentIndustry.title.toLowerCase()}?
+              </div>
+              <p className="text-zinc-400 text-lg leading-relaxed">Разберём специфику вашего бизнеса и предложим форматы, которые работают именно в вашей нише.</p>
+            </div>
+            <LeadForm button="Обсудить проект" textarea="Опишите вашу задачу" />
+          </div>
+        </div>
+      </section>
+    );
+  };
+
   const renderSimplePage = (title, text) => (
     <section className="py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -1883,6 +2258,7 @@ export default function RGuardPrototype() {
   );
 
   return (
+    <HelmetProvider>
     <div className="min-h-screen text-white overflow-x-hidden font-sans relative scanlines" style={{ background: '#0a0a14', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <Atmosphere page={page} />
       <div className="relative z-10">
@@ -1943,6 +2319,10 @@ export default function RGuardPrototype() {
           {page === 'cases' && renderCasesPage()}
           {page === 'case-petro' && renderCasePage('petro-engineering')}
           {page === 'contacts' && renderContactsPage()}
+          {page === 'articles' && renderArticlesPage()}
+          {page.startsWith('article-') && renderArticlePage()}
+          {page === 'industries' && renderIndustriesPage()}
+          {page.startsWith('industry-') && renderIndustryPage()}
           {page === 'bloggers' && renderBloggersPage()}
           {bloggers.some((b) => `blogger-${b.id}` === page) && renderBloggerPage(page.replace('blogger-', ''))}
         </main>
@@ -1959,5 +2339,6 @@ export default function RGuardPrototype() {
         </footer>
       </div>
     </div>
+    </HelmetProvider>
   );
 }
