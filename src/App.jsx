@@ -2,7 +2,7 @@ import React from 'react';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { PortableText } from '@portabletext/react';
 import logoSvg from './logow.svg';
-import { getPosts, getPost, getIndustries, getIndustry } from './sanity.js';
+import { getPosts, getIndustries } from './sanity.js';
 import artSign from './arts/sign.svg';
 import artFavicon from './arts/favicon.svg';
 import artAstro from './arts/astro.svg';
@@ -465,38 +465,32 @@ export default function RGuardPrototype() {
   const [currentIndustry, setCurrentIndustry] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
 
-  // Загрузка данных при переходе на страницы
+  // Загружаем всё один раз при старте — полные данные включая body
   React.useEffect(() => {
-    if (page === 'articles') {
-      setLoading(true);
-      getPosts(postFilter === 'all' ? null : postFilter)
-        .then(data => { setPosts(data || []); setLoading(false); })
-        .catch(err => { console.error('Posts fetch error:', err); setLoading(false); });
-    }
-    if (page === 'industries') {
-      setLoading(true);
-      getIndustries()
-        .then(data => { setIndustries(data || []); setLoading(false); })
-        .catch(err => { console.error('Industries fetch error:', err); setLoading(false); });
-    }
-  }, [page, postFilter]);
+    getPosts().then(data => setPosts(data || [])).catch(() => {});
+    getIndustries().then(data => setIndustries(data || [])).catch(() => {});
+  }, []);
 
+  // Фильтрация статей на клиенте
+  const filteredPosts = React.useMemo(() =>
+    postFilter === 'all' ? posts : posts.filter(p => p.category === postFilter),
+  [posts, postFilter]);
+
+  // Поиск по уже загруженным данным — без дополнительных запросов
   React.useEffect(() => {
     if (page.startsWith('article-')) {
       const slug = page.replace('article-', '');
-      setLoading(true);
-      getPost(slug)
-        .then(data => { setCurrentPost(data); setLoading(false); })
-        .catch(err => { console.error('Post fetch error:', err); setLoading(false); });
+      const found = posts.find(p => p.slug === slug);
+      if (found) { setCurrentPost(found); setLoading(false); }
+      else setLoading(true); // данные ещё грузятся
     }
     if (page.startsWith('industry-')) {
       const slug = page.replace('industry-', '');
-      setLoading(true);
-      getIndustry(slug)
-        .then(data => { setCurrentIndustry(data); setLoading(false); })
-        .catch(err => { console.error('Industry fetch error:', err); setLoading(false); });
+      const found = industries.find(i => i.slug === slug);
+      if (found) { setCurrentIndustry(found); setLoading(false); }
+      else setLoading(true);
     }
-  }, [page]);
+  }, [page, posts, industries]);
 
   const POST_CATEGORIES = [
     { id: 'all', label: 'Все статьи' },
@@ -550,21 +544,20 @@ export default function RGuardPrototype() {
   };
 
   const nav = [
-    { id: 'home', label: 'Главная' },
     { id: 'cases', label: 'Кейсы' },
-    { label: 'Создание Видео', children: [
+    { label: 'Видео', children: [
       { id: 'viral', label: 'Вирусные видеоролики' },
       { id: 'corporate', label: 'Корпоративные фильмы' },
       { id: 'ai-content', label: 'ИИ контент' },
     ] },
-    { id: 'production', label: 'Продюсирование и СММ' },
+    { id: 'production', label: 'Продюсирование' },
     { label: 'Креатив', children: [
       { id: 'scripts', label: 'Написание сценариев' },
       { id: 'concepts', label: 'Концепции рекламных кампаний' },
     ] },
-    { id: 'events', label: 'Организация мероприятий' },
+    { id: 'events', label: 'Мероприятия' },
     { id: 'articles', label: 'Статьи' },
-    { id: 'industries', label: 'Отраслевые решения' },
+    { id: 'industries', label: 'Решения' },
     { id: 'contacts', label: 'Контакты' },
   ];
 
@@ -1995,9 +1988,9 @@ export default function RGuardPrototype() {
         ))}
       </div>
 
-      {loading ? (
+      {filteredPosts.length === 0 && posts.length === 0 ? (
         <div className="font-mono-terminal text-red-500 text-sm tracking-[3px] text-center py-20">// LOADING...</div>
-      ) : posts.length === 0 ? (
+      ) : filteredPosts.length === 0 ? (
         <div className="text-center py-24" style={{ border: '1px solid rgba(239,68,68,0.15)', background: 'rgba(10,10,20,0.8)' }}>
           <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] mb-4">// EMPTY</div>
           <div className="text-2xl font-black mb-4">Статьи появятся здесь</div>
@@ -2005,7 +1998,7 @@ export default function RGuardPrototype() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map(post => (
+          {filteredPosts.map(post => (
             <button key={post._id} onClick={() => goToPage(`article-${post.slug}`)}
               className="cyber-card overflow-hidden text-left">
               {post.coverImage ? (
@@ -2140,7 +2133,7 @@ export default function RGuardPrototype() {
         <p className="text-zinc-400 text-xl leading-relaxed max-w-3xl">Готовые контент-стратегии под вашу отрасль. Выберите направление — покажем, что работает именно в вашей нише.</p>
       </div>
 
-      {loading ? (
+      {industries.length === 0 ? (
         <div className="font-mono-terminal text-red-500 text-sm tracking-[3px] text-center py-20">// LOADING...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
