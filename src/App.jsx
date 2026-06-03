@@ -950,8 +950,8 @@ export default function RGuardPrototype() {
         <div className="grid lg:grid-cols-4 gap-6 mt-16">
           {[['1500+', 'Снятых вертикальных видеороликов'], ['1M+', 'Подписчиков суммарно в соцсетях'], ['2021', 'Стояли у истоков reels-продюсирования'], ['B2B', 'Специализация на сложных нишах и реальном секторе']].map(([value, label]) => (
             <div key={label} className="p-8 hud-corner" style={{border:'1px solid rgba(239,68,68,0.18)',background:'rgba(10,10,20,0.85)'}}>
-              <div className="text-4xl font-black mb-3">{value}</div>
-              <div className="text-zinc-400 leading-relaxed">{label}</div>
+              <div className="font-mono-terminal text-3xl font-black neon-red mb-2">{value}</div>
+              <div className="font-mono-terminal text-zinc-500 text-xs uppercase leading-relaxed" style={{wordBreak:'normal',overflowWrap:'normal',letterSpacing:'0.05em'}}>{label}</div>
             </div>
           ))}
         </div>
@@ -1056,8 +1056,8 @@ export default function RGuardPrototype() {
         <div className="grid lg:grid-cols-4 gap-6 mt-16">
           {[['8–10', 'Видео ежемесячно'], ['Full', 'Продакшн и постинг под ключ'], ['Cross', 'Кросспостинг на все платформы'], ['B2B', 'Специализация на сложных нишах']].map(([value, label]) => (
             <div key={label} className="p-8 hud-corner" style={{border:'1px solid rgba(239,68,68,0.18)',background:'rgba(10,10,20,0.85)'}}>
-              <div className="text-4xl font-black mb-3">{value}</div>
-              <div className="text-zinc-400 leading-relaxed">{label}</div>
+              <div className="font-mono-terminal text-3xl font-black neon-red mb-2">{value}</div>
+              <div className="font-mono-terminal text-zinc-500 text-xs uppercase leading-relaxed" style={{wordBreak:'normal',overflowWrap:'normal',letterSpacing:'0.05em'}}>{label}</div>
             </div>
           ))}
         </div>
@@ -1126,25 +1126,29 @@ export default function RGuardPrototype() {
         description="Реальные результаты: 40+ млн просмотров для Петроинжиниринг, корпоративные фильмы, SMM для B2B. Смотрите проекты RGUARD по отраслям."
         path="/cases"
       />
-      <div className="relative overflow-hidden rounded-[42px] border border-red-950/40 bg-gradient-to-br from-red-950/30 via-black to-black p-10 md:p-16 mb-24">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,rgba(239,68,68,0.35),transparent_45%)]" />
-        <div className="relative z-10 max-w-5xl">
-          <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">Кейсы RGUARD</div>
-          <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Мы превращаем<br />сложный бизнес<br />в медийный</h1>
-          <p className="text-zinc-300 text-xl leading-relaxed max-w-4xl mb-10">Производство. Стройка. Инженерия. Добыча. Реальный сектор. Мы создаем контент, который распространяется внутри индустрии, формирует узнаваемость компании и приводит входящие заявки.</p>
-          <div className="grid md:grid-cols-3 gap-5">
-            <div className="rounded-[28px] border border-red-950/40 bg-black/40 p-6 backdrop-blur-sm"><div className="text-4xl font-black mb-2">1500+</div><div className="text-zinc-400 leading-relaxed">Вертикальных роликов снято командой</div></div>
-            <div className="rounded-[28px] border border-red-950/40 bg-black/40 p-6 backdrop-blur-sm"><div className="text-4xl font-black mb-2">B2B</div><div className="text-zinc-400 leading-relaxed">Специализация на сложных нишах и реальном секторе</div></div>
-            <div className="rounded-[28px] border border-red-950/40 bg-black/40 p-6 backdrop-blur-sm"><div className="text-4xl font-black mb-2">Full</div><div className="text-zinc-400 leading-relaxed">Production, продюсирование и креатив под ключ</div></div>
-          </div>
+      <div className="mb-24">
+        <div className="font-mono-terminal text-red-500 uppercase tracking-[4px] text-xs font-bold mb-6">// CASES.RGUARD</div>
+        <h1 className="glitch-hero text-5xl md:text-7xl font-black leading-none mb-8">Мы превращаем<br />сложный бизнес<br />в медийный</h1>
+        <p className="text-zinc-400 text-xl leading-relaxed max-w-4xl mb-12">Производство. Стройка. Инженерия. Добыча. Реальный сектор. Мы создаем контент, который распространяется внутри индустрии, формирует узнаваемость и приводит заявки.</p>
+        <div className="grid md:grid-cols-3 gap-4">
+          {[['1500+','Вертикальных роликов снято командой'],['B2B','Специализация на сложных нишах и реальном секторе'],['Full','Production, продюсирование и креатив под ключ']].map(([v,l]) => (
+            <div key={l} className="p-6 hud-corner" style={{border:'1px solid rgba(239,68,68,0.18)',background:'rgba(10,10,20,0.85)'}}>
+              <div className="font-mono-terminal text-3xl font-black neon-red mb-2">{v}</div>
+              <div className="text-zinc-500 text-sm leading-relaxed">{l}</div>
+            </div>
+          ))}
         </div>
       </div>
 
       <div className="mb-24">
         <div className="text-4xl font-black mb-4">Компании, которые уже работали с нами</div>
         <div className="text-zinc-400 text-lg mb-10 max-w-3xl">Блок доверия для будущих логотипов клиентов. Сейчас — аккуратные плейсхолдеры в фирменной сетке.</div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
-          {Array.from({ length: 12 }).map((_, index) => <div key={index} className="h-[110px] rounded-[28px] border border-red-950/40 bg-zinc-950 flex items-center justify-center text-zinc-600 uppercase tracking-[3px] text-sm">Logo</div>)}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <div key={index} className="h-[100px] flex items-center justify-center" style={{border:'1px solid rgba(239,68,68,0.15)',background:'rgba(10,10,20,0.8)'}}>
+              <span className="font-mono-terminal text-zinc-700 text-xs tracking-[3px] uppercase">Logo</span>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -1229,8 +1233,8 @@ export default function RGuardPrototype() {
         <div className="grid md:grid-cols-4 gap-6 mb-24">
           {(currentCase.metrics || []).map(([value, label]) => (
             <div key={`${value}-${label}`} className="p-8 hud-corner" style={{border:'1px solid rgba(239,68,68,0.18)',background:'rgba(10,10,20,0.85)'}}>
-              <div className="text-4xl font-black mb-3">{value}</div>
-              <div className="text-zinc-400 leading-relaxed">{label}</div>
+              <div className="font-mono-terminal text-3xl font-black neon-red mb-2">{value}</div>
+              <div className="font-mono-terminal text-zinc-500 text-xs uppercase leading-relaxed" style={{wordBreak:'normal',overflowWrap:'normal',letterSpacing:'0.05em'}}>{label}</div>
             </div>
           ))}
         </div>
@@ -1971,9 +1975,9 @@ export default function RGuardPrototype() {
 
             <div className="grid grid-cols-3 gap-4 mb-10">
               {blogger.metrics.map(([value, label]) => (
-                <div key={label} className="rounded-[24px] border border-red-950/40 bg-zinc-950 p-5 text-center">
-                  <div className="text-3xl font-black mb-1">{value}</div>
-                  <div className="text-zinc-400 text-sm leading-relaxed">{label}</div>
+                <div key={label} className="p-5 text-center hud-corner" style={{border:'1px solid rgba(239,68,68,0.18)',background:'rgba(10,10,20,0.85)'}}>
+                  <div className="font-mono-terminal text-3xl font-black neon-red mb-2">{value}</div>
+                  <div className="font-mono-terminal text-zinc-500 text-xs uppercase leading-relaxed" style={{wordBreak:'normal',overflowWrap:'normal',letterSpacing:'0.05em'}}>{label}</div>
                 </div>
               ))}
             </div>
@@ -2343,24 +2347,24 @@ export default function RGuardPrototype() {
       <div className="relative z-10">
         <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl" style={{ borderBottom: '1px solid rgba(239,68,68,0.2)', background: 'rgba(10,10,20,0.92)', boxShadow: '0 0 20px rgba(239,68,68,0.05)' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-            <button onClick={() => goToPage('home')} className="font-mono-terminal text-2xl font-black tracking-tight neon-red cursor-pointer flicker">RGUARD</button>
+            <button onClick={() => goToPage('home')} className="font-mono-terminal text-2xl font-black tracking-tight neon-red cursor-pointer flicker">RGUARD<span className="text-red-500/60 text-sm">.RU</span></button>
             <a href="tel:+79273412252" className="lg:hidden font-mono-terminal text-xs font-bold tracking-tight text-red-500 hover:text-red-400 transition-all">+7 927 341-22-52</a>
             <nav className="hidden lg:flex items-center gap-8">
               {nav.map((item) => (
-                <div key={item.label || item.id} className="relative group">
+                <div key={item.label || item.id} className="relative group flex items-center">
                   {item.children ? (
                     <>
-                      <button className="font-mono-terminal text-xs uppercase tracking-[2px] text-zinc-400 hover:text-red-400 transition-all flex items-center gap-2 cursor-pointer">{item.label}<span>▾</span></button>
+                      <button className="font-mono-terminal text-xs uppercase tracking-[2px] text-zinc-400 hover:text-red-400 transition-all inline-flex items-center gap-1 cursor-pointer leading-none">{item.label}<span className="text-[10px] leading-none mt-px">▾</span></button>
                       <div className="absolute top-full left-0 pt-4 hidden group-hover:block z-50">
-                        <div className="w-[280px] p-2" style={{ border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(10,10,20,0.98)' }}>
+                        <div className="w-[320px] p-2" style={{ border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(10,10,20,0.98)' }}>
                           {item.children.map((child) => (
-                            <button key={child.id} onClick={() => goToPage(child.id)} className="w-full text-left px-4 py-3 font-mono-terminal text-xs uppercase tracking-[2px] text-zinc-400 hover:text-red-400 hover:bg-red-950/20 transition-all cursor-pointer">{child.label}</button>
+                            <button key={child.id} onClick={() => goToPage(child.id)} className="w-full text-left px-4 py-3 font-mono-terminal text-xs uppercase tracking-[2px] text-zinc-400 hover:text-red-400 hover:bg-red-950/20 transition-all cursor-pointer break-words">{child.label}</button>
                           ))}
                         </div>
                       </div>
                     </>
                   ) : (
-                    <button onClick={() => goToPage(item.id)} className={`font-mono-terminal text-xs uppercase tracking-[2px] transition-all cursor-pointer ${item.id && page === item.id ? 'text-red-400' : 'text-zinc-400 hover:text-red-400'}`}>{item.label}</button>
+                    <button onClick={() => goToPage(item.id)} className={`font-mono-terminal text-xs uppercase tracking-[2px] transition-all cursor-pointer leading-none ${item.id && page === item.id ? 'text-red-400' : 'text-zinc-400 hover:text-red-400'}`}>{item.label}</button>
                   )}
                 </div>
               ))}

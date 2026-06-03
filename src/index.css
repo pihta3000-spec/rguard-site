@@ -4,6 +4,17 @@
 body {
   margin: 0;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Защита от выхода текста за границы — только длинные слова без пробелов */
+p, a {
+  overflow-wrap: break-word;
+}
+
+/* Email и URL — разрешаем разрыв в любом месте */
+a[href^="mailto:"], a[href^="tel:"] {
+  word-break: break-all;
 }
 
 /* ── SCANLINES ── */
