@@ -3,6 +3,7 @@ import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { PortableText } from '@portabletext/react';
 import logoSvg from './logow.svg';
 import { getPosts, getIndustries } from './sanity.js';
+import { Pickaxe, HardHat, Factory, Wheat, Flame, Building2 } from 'lucide-react';
 import artSign from './arts/sign.svg';
 import artFavicon from './arts/favicon.svg';
 import artAstro from './arts/astro.svg';
@@ -550,6 +551,26 @@ export default function RGuardPrototype() {
   ];
 
   const formatDate = (iso) => iso ? new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+
+  const industryIcons = {
+    mining:       <Pickaxe  size={32} strokeWidth={1.5} />,
+    construction: <HardHat  size={32} strokeWidth={1.5} />,
+    manufacturing:<Factory  size={32} strokeWidth={1.5} />,
+    agro:         <Wheat    size={32} strokeWidth={1.5} />,
+    'oil-gas':    <Flame    size={32} strokeWidth={1.5} />,
+    realty:       <Building2 size={32} strokeWidth={1.5} />,
+  };
+  const getIndustryIcon = (slug, size = 32) => {
+    const icons = {
+      mining:       <Pickaxe   size={size} strokeWidth={1.5} />,
+      construction: <HardHat   size={size} strokeWidth={1.5} />,
+      manufacturing:<Factory   size={size} strokeWidth={1.5} />,
+      agro:         <Wheat     size={size} strokeWidth={1.5} />,
+      'oil-gas':    <Flame     size={size} strokeWidth={1.5} />,
+      realty:       <Building2 size={size} strokeWidth={1.5} />,
+    };
+    return icons[slug] || <Building2 size={size} strokeWidth={1.5} />;
+  };
 
   const portableTextComponents = {
     block: {
@@ -2231,7 +2252,9 @@ export default function RGuardPrototype() {
             <button key={industry._id} onClick={() => goToPage(`industry-${industry.slug}`)}
               className="cyber-card p-8 text-left group">
               <div className="flex items-center justify-between mb-6">
-                <div className="text-4xl">{industry.icon}</div>
+                <div className="text-red-500" style={{filter:'drop-shadow(0 0 6px rgba(239,68,68,0.6))'}}>
+                  {getIndustryIcon(industry.slug)}
+                </div>
                 <div className="font-mono-terminal text-red-500/30 text-xs">#{String(i+1).padStart(2,'0')}</div>
               </div>
               <h2 className="text-2xl font-black mb-4 leading-tight">{industry.title}</h2>
@@ -2276,7 +2299,9 @@ export default function RGuardPrototype() {
 
         <div className="grid lg:grid-cols-2 gap-16 mb-20 items-start">
           <div>
-            <div className="text-6xl mb-6">{currentIndustry.icon}</div>
+            <div className="text-red-500 mb-6" style={{filter:'drop-shadow(0 0 10px rgba(239,68,68,0.7))'}}>
+              {getIndustryIcon(currentIndustry.slug, 56)}
+            </div>
             <div className="font-mono-terminal text-red-500 text-xs tracking-[4px] uppercase mb-4">// INDUSTRY</div>
             <h1 className="glitch-hero text-5xl md:text-6xl font-black leading-none mb-6">{currentIndustry.title}</h1>
             {currentIndustry.shortDesc && (
